@@ -21,7 +21,7 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 			'retryWait' => 1000,
 		);
 
-		$optios = array_merge($defaultOptions, $options);
+		$options = array_merge($defaultOptions, $options);
 		parent::__construct($options['browserName'], $options['desiredCapabilities'], $options['wdHost']);
 		
 		$this->retries = $options['retries'];
