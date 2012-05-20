@@ -12,7 +12,7 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	private $retries;
 	private $retryWait;
 	
-	public function __construct($options) {
+	public function __construct($options = array()) {
 		$defaultOptions = array(
 			'browserName' => 'firefox',
 			'desiredCapabilities' => null,
