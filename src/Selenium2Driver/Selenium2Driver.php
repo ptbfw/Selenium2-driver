@@ -46,5 +46,9 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 			$return = parent::find($xpath);
 		} while(empty($return) && $tries < $this->retries);
 	}
+	
+	public function wait($time, $condition = 'false') {
+		parent::wait($time, $condition);
+	}
 
 }
