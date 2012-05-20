@@ -1,6 +1,6 @@
 <?php
 
-namespace ptbfw\Selenium2Driver;
+namespace Ptbfw\Selenium2Driver;
 
 /**
  * Description of ptbfwSelenium2Driver
