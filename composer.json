@@ -17,9 +17,9 @@
         "php": ">=5.3.0",
         "behat/mink" : "*"
     },
-     "autoload": {
+    "autoload": {
         "psr-0": {
-            "Ptbfw\\Selenium2Driver": "src/"
+            "Ptbfw": "src/"
         }
     }
 }
