@@ -29,7 +29,7 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	}
 
 	public function getContent() {
-		throw new \Exception('not implemented yet');
+		return $this->retry(__METHOD__, func_get_args(), true);
 	}
 
 	/**
@@ -43,8 +43,8 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 		return $this->retry(__METHOD__, func_get_args(), true);
 	}
 
-	public function executeJsOnXpath($xpath, $script, $sync = true) {
-		return $this->retry(__METHOD__, func_get_args());
+	public function executeJsOnXpath($xpath, $script, $sync = true, $requireReturn = false) {
+		return $this->retry(__METHOD__, func_get_args(), $requireReturn);
 	}
 
 	public function getTagName($xpath) {
@@ -68,7 +68,11 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	}
 
 	public function setValue($xpath, $value) {
-		return $this->retry(__METHOD__, func_get_args());
+		$valueEscaped = str_replace('"', '\"', $value);
+		$this->withSyn();
+		$id = $this->getAttribute($xpath, 'id');
+		$this->executeScript("Syn.type( \"" . $valueEscaped . "\", '{$id}')");
+		return true;
 	}
 
 	public function check($xpath) {
@@ -122,7 +126,7 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 			} catch (\Exception $e) {
 				$ex = $e;
 			}
-		} while (empty($return) && $tries <= $this->retries && $requireReturn);
+		} while ( empty($return) && $tries <= $this->retries && $requireReturn);
 
 		if ($ex !== null) {
 			throw $ex;
