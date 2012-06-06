@@ -70,21 +70,39 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
     public function setValue($xpath, $value) {
         $valueEscaped = str_replace('"', '\"', $value);
         $this->withSyn();
-        $id = $this->getAttribute($xpath, 'id');
+        $elementJavaScriptName = 'ptbfw_' . uniqid();
+        $JS = <<< JS
+       
+        {$elementJavaScriptName} = document.evaluate("{$xpath}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
+JS;
+
+        $this->evaluateScript($JS);
 
         if ($this->isSelect($xpath)) {
             parent::setValue($xpath, $value);
+
             $js = <<<JS
             var evt = document.createEvent("MouseEvents");
             evt.initMouseEvent("change", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-            document.getElementById('{$id}').dispatchEvent(evt);
+            {$elementJavaScriptName}.dispatchEvent(evt);
+            if ({$elementJavaScriptName}.onchange) {
+                {$elementJavaScriptName}.onchange();
+            }
 JS;
 
             $this->evaluateScript($js);
         } else {
-            $this->executeScript("Syn.type( \"" . $valueEscaped . "\", '{$id}')");
+            $this->executeScript("Syn.type( \"" . $valueEscaped . "\", {$elementJavaScriptName})");
         }
 
+        /*
+         * everage 2 symbols per second
+         */
+        $waitTIme = strlen($value) * 0.5;
+        $jsEvent = <<<JS
+        {$elementJavaScriptName}.value != '{$valueEscaped}'
+JS;
+        $this->wait($waitTIme, $jsEvent);
         return true;
     }
 
