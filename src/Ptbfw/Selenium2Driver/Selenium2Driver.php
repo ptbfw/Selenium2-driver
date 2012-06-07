@@ -92,6 +92,7 @@ JS;
 
             $this->evaluateScript($js);
         } else {
+            $this->executeScript("{$elementJavaScriptName}.value = '';");
             $this->executeScript("Syn.type( \"" . $valueEscaped . "\", {$elementJavaScriptName})");
         }
 
