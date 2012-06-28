@@ -80,14 +80,14 @@ JS;
 		$this->evaluateScript($JS);
 
 		$this->executeScript("{$elementJavaScriptName}.value = '';");
-		$this->executeScript("Syn.type( \"" . $valueEscaped . "\", {$elementJavaScriptName})");
+		$this->executeScript("Syn.type( \"{$valueEscaped}\", {$elementJavaScriptName})");
 
 		/*
-		 * everage 2 symbols per second
+		 * everage 1 symbol per second
 		 */
-		$waitTIme = strlen($value) * 0.5;
+		$waitTIme = strlen($value) * 1000;
 		$jsEvent = <<<JS
-        {$elementJavaScriptName}.value != '{$valueEscaped}'
+        {$elementJavaScriptName}.value == "{$valueEscaped}"
 JS;
 		$this->wait($waitTIme, $jsEvent);
 		return true;
