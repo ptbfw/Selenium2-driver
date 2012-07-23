@@ -94,11 +94,47 @@ JS;
 	}
 
 	public function check($xpath) {
-		return $this->retry(__METHOD__, func_get_args());
+		$this->retry(__METHOD__, func_get_args());
+		$elementJavaScriptName = 'ptbfw_' . uniqid();
+		$JS = <<< JS
+      
+        {$elementJavaScriptName} = document.evaluate("{$xpath}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
+JS;
+
+		$this->evaluateScript($JS);
+
+		$js = <<<JS
+            var evt = document.createEvent("MouseEvents");
+            evt.initMouseEvent("change", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            {$elementJavaScriptName}.dispatchEvent(evt);
+            if ({$elementJavaScriptName}.onchange) {
+                {$elementJavaScriptName}.onchange();
+            }
+JS;
+
+		$this->evaluateScript($js);
 	}
 
 	public function uncheck($xpath) {
-		return $this->retry(__METHOD__, func_get_args());
+		$this->retry(__METHOD__, func_get_args());
+		$elementJavaScriptName = 'ptbfw_' . uniqid();
+		$JS = <<< JS
+      
+        {$elementJavaScriptName} = document.evaluate("{$xpath}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
+JS;
+
+		$this->evaluateScript($JS);
+
+		$js = <<<JS
+            var evt = document.createEvent("MouseEvents");
+            evt.initMouseEvent("change", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            {$elementJavaScriptName}.dispatchEvent(evt);
+            if ({$elementJavaScriptName}.onchange) {
+                {$elementJavaScriptName}.onchange();
+            }
+JS;
+
+		$this->evaluateScript($js);
 	}
 
 	public function isChecked($xpath) {
