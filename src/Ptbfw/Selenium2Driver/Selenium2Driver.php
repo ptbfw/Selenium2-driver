@@ -72,24 +72,22 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 		$valueEscaped = str_replace(PHP_EOL, '\n', $valueEscaped);
 		$this->withSyn();
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
-		$JS = <<< JS
-      
-        {$elementJavaScriptName} = document.evaluate("{$xpath}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
-JS;
-
+		$JS = "{$elementJavaScriptName} = document.evaluate('{$xpath}', document, null, XPathResult.ANY_TYPE, null).iterateNext();";
 		$this->evaluateScript($JS);
-
 		$this->executeScript("{$elementJavaScriptName}.value = '';");
-		$this->executeScript("Syn.type( \"{$valueEscaped}\", {$elementJavaScriptName})");
+		
+		// if value === '' there is syn exception
+		// @todo onchange() ???
+		if ($value) {
+			$this->executeScript("Syn.type( \"{$valueEscaped}\", {$elementJavaScriptName})");
 
-		/*
-		 * everage 1 symbol per second
-		 */
-		$waitTIme = strlen($value) * 1000;
-		$jsEvent = <<<JS
-        {$elementJavaScriptName}.value == "{$valueEscaped}"
-JS;
-		$this->wait($waitTIme, $jsEvent);
+			/*
+			 * everage 1 symbol per second
+			 */
+			$waitTIme = strlen($value) * 1000;
+			$jsEvent = "{$elementJavaScriptName}.value == \"{$valueEscaped}\"";
+			$this->wait($waitTIme, $jsEvent);
+		}
 		return true;
 	}
 
