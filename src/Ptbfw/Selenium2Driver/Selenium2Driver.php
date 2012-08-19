@@ -68,14 +68,13 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	}
 
 	public function setValue($xpath, $value) {
-		$valueEscaped = str_replace('"', '\"', $value);
-		$valueEscaped = str_replace(PHP_EOL, '\n', $valueEscaped);
+		$valueEscaped = $this->escapeStringForJs($xpath, true);
 		$this->withSyn();
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = "{$elementJavaScriptName} = document.evaluate('{$xpath}', document, null, XPathResult.ANY_TYPE, null).iterateNext();";
 		$this->evaluateScript($JS);
 		$this->executeScript("{$elementJavaScriptName}.value = '';");
-		
+
 		// if value === '' there is syn exception
 		// @todo onchange() ???
 		if ($value) {
@@ -92,11 +91,12 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	}
 
 	public function check($xpath) {
+		$xpathEscaped = $this->escapeStringForJs($xpath);
 		$this->retry(__METHOD__, func_get_args());
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
       
-        {$elementJavaScriptName} = document.evaluate("{$xpath}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
+        {$elementJavaScriptName} = document.evaluate("{$xpathEscaped}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
 JS;
 
 		$this->evaluateScript($JS);
@@ -114,11 +114,12 @@ JS;
 	}
 
 	public function uncheck($xpath) {
+		$xpathEscaped = $this->escapeStringForJs($xpath);
 		$this->retry(__METHOD__, func_get_args());
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
       
-        {$elementJavaScriptName} = document.evaluate("{$xpath}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
+        {$elementJavaScriptName} = document.evaluate("{$xpathEscaped}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
 JS;
 
 		$this->evaluateScript($JS);
@@ -140,13 +141,12 @@ JS;
 	}
 
 	public function selectOption($xpath, $value, $multiple = false) {
+		$xpathEscaped = $this->escapeStringForJs($xpath);
 		$this->retry(__METHOD__, func_get_args());
-		$valueEscaped = str_replace('"', '\"', $value);
-		$valueEscaped = str_replace(PHP_EOL, '\n', $valueEscaped);
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
       
-        {$elementJavaScriptName} = document.evaluate("{$xpath}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
+        {$elementJavaScriptName} = document.evaluate("{$xpathEscaped}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
 JS;
 
 		$this->evaluateScript($JS);
@@ -229,6 +229,23 @@ JS;
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * return escaped string witch could be used in JS expressions
+	 * 
+	 * @param string $xpath
+	 * @param bool $escapeNewLine
+	 * @return string
+	 */
+	protected function escapeStringForJs($xpath, $escapeNewLine = false) {
+		if ($escapeNewLine) {
+			$xpath = preg_replace("~\n~", '\n', $xpath);
+		} else {
+			assertNotRegExp("~\n~", $xpath, 'xpath should not contains new line');
+		}
+
+		return addslashes($xpath);
 	}
 
 }
