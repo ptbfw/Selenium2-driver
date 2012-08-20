@@ -68,10 +68,11 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	}
 
 	public function setValue($xpath, $value) {
-		$valueEscaped = $this->escapeStringForJs($xpath, true);
+		$xpathEscaped = $this->escapeStringForJs($xpath);
+		$valueEscaped = $this->escapeStringForJs($value, true);
 		$this->withSyn();
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
-		$JS = "{$elementJavaScriptName} = document.evaluate('{$xpath}', document, null, XPathResult.ANY_TYPE, null).iterateNext();";
+		$JS = "{$elementJavaScriptName} = document.evaluate('{$xpathEscaped}', document, null, XPathResult.ANY_TYPE, null).iterateNext();";
 		$this->evaluateScript($JS);
 		$this->executeScript("{$elementJavaScriptName}.value = '';");
 
