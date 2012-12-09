@@ -243,7 +243,7 @@ JS;
 		if ($escapeNewLine) {
 			$xpath = preg_replace("~\n~", '\n', $xpath);
 		} else {
-			assertNotRegExp("~\n~", $xpath, 'xpath should not contains new line');
+			\assertNotRegExp("~\n~", $xpath, 'xpath should not contains new line');
 		}
 
 		return addslashes($xpath);
