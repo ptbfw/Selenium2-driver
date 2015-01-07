@@ -68,8 +68,8 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	}
 
 	public function setValue($xpath, $value) {
-		$xpathEscaped = $this->escapeStringForJs($xpath);
-		$valueEscaped = $this->escapeStringForJs($value, true);
+		$xpathEscaped = $this->escapeStringForJs($xpath, 'xpath');
+		$valueEscaped = $this->escapeStringForJs($value);
 		$this->withSyn();
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = "{$elementJavaScriptName} = document.evaluate('{$xpathEscaped}', document, null, XPathResult.ANY_TYPE, null).iterateNext();";
@@ -92,7 +92,7 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 	}
 
 	public function check($xpath) {
-		$xpathEscaped = $this->escapeStringForJs($xpath);
+		$xpathEscaped = $this->escapeStringForJs($xpath, 'xpath');
 		$this->retry(__METHOD__, func_get_args());
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
@@ -115,7 +115,7 @@ JS;
 	}
 
 	public function uncheck($xpath) {
-		$xpathEscaped = $this->escapeStringForJs($xpath);
+		$xpathEscaped = $this->escapeStringForJs($xpath, 'xpath');
 		$this->retry(__METHOD__, func_get_args());
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
@@ -142,7 +142,7 @@ JS;
 	}
 
 	public function selectOption($xpath, $value, $multiple = false) {
-		$xpathEscaped = $this->escapeStringForJs($xpath);
+		$xpathEscaped = $this->escapeStringForJs($xpath, 'xpath');
 		$this->retry(__METHOD__, func_get_args());
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
@@ -236,17 +236,23 @@ JS;
 	 * return escaped string witch could be used in JS expressions
 	 * 
 	 * @param string $xpath
-	 * @param bool $escapeNewLine
+	 * @param string $escapeType
 	 * @return string
 	 */
-	protected function escapeStringForJs($xpath, $escapeNewLine = false) {
-		if ($escapeNewLine) {
-			$xpath = preg_replace("~\n~", '\n', $xpath);
-		} else {
-			\assertNotRegExp("~\n~", $xpath, 'xpath should not contains new line');
-		}
-
-		return addslashes($xpath);
-	}
+	protected function escapeStringForJs($xpath, $escapeType = 'string') {
+     switch ($escapeType) {
+         case 'string':
+             $return = preg_replace("~\n~", '\\n', $xpath);
+             $return = addslashes($return);
+             return $return;
+         case 'xpath':
+             $return = preg_replace("~\n~", ' ', $xpath);
+             $return = addslashes($return);
+             var_dump($xpath);
+             return $return;
+         default :
+             throw new \Exception('unknown escapeType');
+        }
+    }
 
 }
