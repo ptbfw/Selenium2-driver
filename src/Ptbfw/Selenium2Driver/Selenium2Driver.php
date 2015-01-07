@@ -72,7 +72,7 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 		$valueEscaped = $this->escapeStringForJs($value);
 		$this->withSyn();
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
-		$JS = "{$elementJavaScriptName} = document.evaluate('{$xpathEscaped}', document, null, XPathResult.ANY_TYPE, null).iterateNext();";
+		$JS = "{$elementJavaScriptName} = document.evaluate(\"{$xpathEscaped}\", document, null, XPathResult.ANY_TYPE, null).iterateNext();";
 		$this->evaluateScript($JS);
 		$this->executeScript("{$elementJavaScriptName}.value = '';");
 
@@ -147,13 +147,8 @@ JS;
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
       
-        {$elementJavaScriptName} = document.evaluate("{$xpathEscaped}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
-JS;
-
-		$this->evaluateScript($JS);
-
-		$js = <<<JS
-            var evt = document.createEvent("MouseEvents");
+        var {$elementJavaScriptName} = document.evaluate("{$xpathEscaped}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
+        var evt = document.createEvent("MouseEvents");
             evt.initMouseEvent("change", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
             {$elementJavaScriptName}.dispatchEvent(evt);
             if ({$elementJavaScriptName}.onchange) {
@@ -161,7 +156,8 @@ JS;
             }
 JS;
 
-		$this->evaluateScript($js);
+		$this->evaluateScript($JS);
+
 	}
 
 	public function click($xpath) {
@@ -243,12 +239,10 @@ JS;
      switch ($escapeType) {
          case 'string':
              $return = preg_replace("~\n~", '\\n', $xpath);
-             $return = addslashes($return);
              return $return;
          case 'xpath':
              $return = preg_replace("~\n~", ' ', $xpath);
-             $return = addslashes($return);
-             var_dump($xpath);
+             $return = preg_replace("/\"/", '\\"', $return);
              return $return;
          default :
              throw new \Exception('unknown escapeType');
