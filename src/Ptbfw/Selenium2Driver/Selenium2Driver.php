@@ -97,12 +97,7 @@ class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 		$elementJavaScriptName = 'ptbfw_' . uniqid();
 		$JS = <<< JS
       
-        {$elementJavaScriptName} = document.evaluate("{$xpathEscaped}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
-JS;
-
-		$this->evaluateScript($JS);
-
-		$js = <<<JS
+            {$elementJavaScriptName} = document.evaluate("{$xpathEscaped}", document, null, XPathResult.ANY_TYPE, null).iterateNext()
             var evt = document.createEvent("MouseEvents");
             evt.initMouseEvent("change", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
             {$elementJavaScriptName}.dispatchEvent(evt);
@@ -111,7 +106,8 @@ JS;
             }
 JS;
 
-		$this->evaluateScript($js);
+		$this->evaluateScript($JS);
+
 	}
 
 	public function uncheck($xpath) {
