@@ -5,12 +5,13 @@ namespace Ptbfw\Selenium2Driver;
 /**
  * Description of ptbfwSelenium2Driver
  *
- * @author potaka
+ * @author po_taka <angel.koilov@gmail.com>
  */
 class Selenium2Driver extends \Behat\Mink\Driver\Selenium2Driver {
 
 	private $retries;
 	private $retryWait;
+    private $debug = 0;
 
 	public function __construct($options = array()) {
 		$defaultOptions = array(
@@ -176,7 +177,7 @@ JS;
 		$tries = 0;
 		$ex = null;
 		do {
-			if ($tries > 0) {
+			if ($this->debug >= 1 && $tries > 0) {
 				echo PHP_EOL . "{$tries}/{$this->retries} retries" . PHP_EOL;
 			}
 
